@@ -1,4 +1,4 @@
-"""Peer dua arah: Feistel-CBC di atas TCP socket.
+"""Peer dua arah: DES-CBC di atas TCP socket.
 
 Pemakaian:
     python3 peer.py listen
@@ -14,6 +14,7 @@ import sys
 import threading
 
 from cipher import encrypt, decrypt
+from des import BLOCK_SIZE
 from config import KEY, HOST, PORT
 
 HEADER = 4
@@ -49,7 +50,7 @@ def send_loop(sock: socket.socket) -> None:
             sock.close()
             return
         payload = encrypt(line.encode("utf-8"), KEY)
-        print(f"[kirim] ciphertext ({len(payload[8:])} byte): {payload[8:].hex()}")
+        print(f"[kirim] ciphertext ({len(payload[BLOCK_SIZE:])} byte): {payload[BLOCK_SIZE:].hex()}")
         _send_frame(sock, payload)
 
 
@@ -60,7 +61,7 @@ def recv_loop(sock: socket.socket) -> None:
         except (ConnectionResetError, EOFError, OSError):
             print("[terima] koneksi ditutup")
             return
-        iv, ct = payload[:8], payload[8:]
+        iv, ct = payload[:BLOCK_SIZE], payload[BLOCK_SIZE:]
         print(f"[terima] ciphertext ({len(ct)} byte): {ct.hex()}  (IV: {iv.hex()})")
         try:
             print(f"[terima] plaintext: {decrypt(payload, KEY).decode('utf-8')}")
