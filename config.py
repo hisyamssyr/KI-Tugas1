@@ -7,5 +7,5 @@ mode listen.
 
 KEY = bytes.fromhex("2c67464f2915c852")
 
-HOST = "127.0.0.1"
+HOST = "0.0.0.0"
 PORT = 9000
